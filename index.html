@@ -32,7 +32,10 @@ svg {
 
 </style>
 <body>
-     <h1 style = "text-align:center"><bold> Massachusetts Population Density 2015 </bold></h1>
+     <h1 style = "text-align:center"><bold> Massachutes Population Density 2015 </bold></h1>
+    
+    
+    
     <div id="option">
          
            <input name="updateColor" 
@@ -99,7 +102,7 @@ var xAxis = d3.svg.axis()
 
 var svg = d3.select("body").append("svg")
     .attr("width", width)
-    .attr("height", height);
+    .attr("height", height-400);
 
 var g = svg.append("g")
     .attr("class", "key")
@@ -161,171 +164,6 @@ d3.json("Masa.json", function(error, ca) {
       .attr("class", "county-border")
       .attr("d", path);
 });
-  
-    function UpdateMap() {
-      if(isColor){
-     var g = svg.append("g")
-    .attr("class", "key")
-    .attr("transform", "translate(440,40)");
- 
-
-g.selectAll("rect")
-    .data(color.range().map(function(d, i) {
-      return {
-        x0: i ? x(color.domain()[i - 1]) : x.range()[0],
-        x1: i < color.domain().length ? x(color.domain()[i]) : x.range()[1],
-        z: d
-      };
-    }))
-  .enter().append("rect")
-    .attr("height", 8)
-    .attr("x", function(d) { return d.x0; })
-    .attr("width", function(d) { return d.x1 - d.x0; })
-    .style("fill", function(d) { return d.z; });
-
-
-
-d3.json("Masa.json", function(error, ca) {
-  if (error) throw error;
-    console.log(ca);
-
-  tracts = topojson.feature(ca, ca.objects.tracts);
-
-  // Clip tracts to land.
-  svg.append("defs").append("clipPath")
-      .attr("id", "clip-land")
-    .append("path")
-      .datum(topojson.feature(ca, ca.objects.counties))
-      .attr("d", path);
-
-  // Group tracts by color for faster rendering.
-  svg.append("g")
-      .attr("class", "tract")
-      .attr("clip-path", "url(#clip-land)")
-    .selectAll("path")
-      .data(d3.nest()
-        .key(function(d) { return color(d.properties.population/ d.properties.area * 2.58999e6); })
-        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
-    .enter().append("path")
-      .style("fill", function(d) { return d.key; })
-      .attr("d", function(d) { return path({type: "FeatureCollection", features: d.values}); });
-  //.attr("d", path); Feature
-
-  // Draw interior county borders 
-    // function is called for each arc sharing adjacent polygons a and b
-    // Since a and b are not identical the function returns true and the arc is drawn
-    // boundary arcs are not drawn
-    if(isTogol) {
-  svg.append("path")
-      .datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a !== b; }))
-  // following code draws the exterior boundary
-//.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
-      .attr("class", "county-border")
-      .attr("d", path);
-    }
-        
-        if(!isBoundry){
-        svg.append("path")
-      // following code draws the exterior boundary
-.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
-      .attr("class", "state-border")
-      .attr("d", path);
-            
-        }
-    });
-     }else{
-          if(!isColor){
-      var g = svg.append("g")
-    .attr("class", "key")
-    .attr("transform", "translate(440,40)");
- 
-
-g.selectAll("rect")
-    .data(colors.range().map(function(d, i) {
-      return {
-        x0: i ? x(colors.domain()[i - 1]) : x.range()[0],
-        x1: i < colors.domain().length ? x(colors.domain()[i]) : x.range()[1],
-        z: d
-      };
-    }))
-  .enter().append("rect")
-    .attr("height", 8)
-    .attr("x", function(d) { return d.x0; })
-    .attr("width", function(d) { return d.x1 - d.x0; })
-    .style("fill", function(d) { return d.z; });
-
-
-
-d3.json("Masa.json", function(error, ca) {
-  if (error) throw error;
-    console.log(ca);
-
-  tracts = topojson.feature(ca, ca.objects.tracts);
-
-  // Clip tracts to land.
-  svg.append("defs").append("clipPath")
-      .attr("id", "clip-land")
-    .append("path")
-      .datum(topojson.feature(ca, ca.objects.counties))
-      .attr("d", path);
-
-  // Group tracts by color for faster rendering.
-  svg.append("g")
-      .attr("class", "tract")
-      .attr("clip-path", "url(#clip-land)")
-    .selectAll("path")
-      .data(d3.nest()
-        .key(function(d) { return colors(d.properties.population/ d.properties.area * 2.58999e6); })
-        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
-    .enter().append("path")
-      .style("fill", function(d) { return d.key; })
-      .attr("d", function(d) { return path({type: "FeatureCollection", features: d.values}); });
-  //.attr("d", path); Feature
-
-  // Draw interior county borders 
-    // function is called for each arc sharing adjacent polygons a and b
-    // Since a and b are not identical the function returns true and the arc is drawn
-    // boundary arcs are not drawn
-    if(isTogol){
-  svg.append("path")
-      .datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a !== b; }))
-  // following code draws the exterior boundary
-//.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
-      .attr("class", "county-border")
-      .attr("d", path);
-    }
-    if(!isBoundry){
-        svg.append("path")
-      // following code draws the exterior boundary
-.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
-      .attr("class", "state-border")
-      .attr("d", path);
-            
-        }
-});   
-                 
-          }
-     }
-  }
-    
-    document.getElementById("color").onclick =
-        function(){
-        isColor= !isColor;
-        UpdateMap();
-        
-    }
-     document.getElementById("togol").onclick =
-        function(){
-        isTogol= !isTogol;
-        UpdateMap();
-        
-    }
-     document.getElementById("stateBoundries").onclick =
-        function(){
-        isBoundry= !isBoundry;
-        UpdateMap();
-        
-    }
  /*   
 function ChangeBrown() {
        
@@ -607,10 +445,174 @@ d3.json("Masa.json", function(error, ca) {
     //------------------------------------------------------
     */
     
+  function UpdateMap() {
+      if(isColor){
+     var g = svg.append("g")
+    .attr("class", "key")
+    .attr("transform", "translate(440,40)");
+ 
 
+g.selectAll("rect")
+    .data(color.range().map(function(d, i) {
+      return {
+        x0: i ? x(color.domain()[i - 1]) : x.range()[0],
+        x1: i < color.domain().length ? x(color.domain()[i]) : x.range()[1],
+        z: d
+      };
+    }))
+  .enter().append("rect")
+    .attr("height", 8)
+    .attr("x", function(d) { return d.x0; })
+    .attr("width", function(d) { return d.x1 - d.x0; })
+    .style("fill", function(d) { return d.z; });
+
+
+
+d3.json("Masa.json", function(error, ca) {
+  if (error) throw error;
+    console.log(ca);
+
+  tracts = topojson.feature(ca, ca.objects.tracts);
+
+  // Clip tracts to land.
+  svg.append("defs").append("clipPath")
+      .attr("id", "clip-land")
+    .append("path")
+      .datum(topojson.feature(ca, ca.objects.counties))
+      .attr("d", path);
+
+  // Group tracts by color for faster rendering.
+  svg.append("g")
+      .attr("class", "tract")
+      .attr("clip-path", "url(#clip-land)")
+    .selectAll("path")
+      .data(d3.nest()
+        .key(function(d) { return color(d.properties.population/ d.properties.area * 2.58999e6); })
+        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
+    .enter().append("path")
+      .style("fill", function(d) { return d.key; })
+      .attr("d", function(d) { return path({type: "FeatureCollection", features: d.values}); });
+  //.attr("d", path); Feature
+
+  // Draw interior county borders 
+    // function is called for each arc sharing adjacent polygons a and b
+    // Since a and b are not identical the function returns true and the arc is drawn
+    // boundary arcs are not drawn
+    if(isTogol) {
+  svg.append("path")
+      .datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a !== b; }))
+  // following code draws the exterior boundary
+//.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
+      .attr("class", "county-border")
+      .attr("d", path);
+    }
+        
+        if(!isBoundry){
+        svg.append("path")
+      // following code draws the exterior boundary
+.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
+      .attr("class", "state-border")
+      .attr("d", path);
+            
+        }
+    });
+     }else{
+          if(!isColor){
+      var g = svg.append("g")
+    .attr("class", "key")
+    .attr("transform", "translate(440,40)");
+ 
+
+g.selectAll("rect")
+    .data(colors.range().map(function(d, i) {
+      return {
+        x0: i ? x(colors.domain()[i - 1]) : x.range()[0],
+        x1: i < colors.domain().length ? x(colors.domain()[i]) : x.range()[1],
+        z: d
+      };
+    }))
+  .enter().append("rect")
+    .attr("height", 8)
+    .attr("x", function(d) { return d.x0; })
+    .attr("width", function(d) { return d.x1 - d.x0; })
+    .style("fill", function(d) { return d.z; });
+
+
+
+d3.json("Masa.json", function(error, ca) {
+  if (error) throw error;
+    console.log(ca);
+
+  tracts = topojson.feature(ca, ca.objects.tracts);
+
+  // Clip tracts to land.
+  svg.append("defs").append("clipPath")
+      .attr("id", "clip-land")
+    .append("path")
+      .datum(topojson.feature(ca, ca.objects.counties))
+      .attr("d", path);
+
+  // Group tracts by color for faster rendering.
+  svg.append("g")
+      .attr("class", "tract")
+      .attr("clip-path", "url(#clip-land)")
+    .selectAll("path")
+      .data(d3.nest()
+        .key(function(d) { return colors(d.properties.population/ d.properties.area * 2.58999e6); })
+        .entries(tracts.features.filter(function(d) { return d.properties.area; })))
+    .enter().append("path")
+      .style("fill", function(d) { return d.key; })
+      .attr("d", function(d) { return path({type: "FeatureCollection", features: d.values}); });
+  //.attr("d", path); Feature
+
+  // Draw interior county borders 
+    // function is called for each arc sharing adjacent polygons a and b
+    // Since a and b are not identical the function returns true and the arc is drawn
+    // boundary arcs are not drawn
+    if(isTogol){
+  svg.append("path")
+      .datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a !== b; }))
+  // following code draws the exterior boundary
+//.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
+      .attr("class", "county-border")
+      .attr("d", path);
+    }
+    if(!isBoundry){
+        svg.append("path")
+      // following code draws the exterior boundary
+.datum(topojson.mesh(ca, ca.objects.counties, function(a, b) { return a === b; }))
+      .attr("class", "state-border")
+      .attr("d", path);
+            
+        }
+});   
+                 
+          }
+     }
+  }
+    
+    document.getElementById("color").onclick =
+        function(){
+        isColor= !isColor;
+        UpdateMap();
+        
+    }
+     document.getElementById("togol").onclick =
+        function(){
+        isTogol= !isTogol;
+        UpdateMap();
+        
+    }
+     document.getElementById("stateBoundries").onclick =
+        function(){
+        isBoundry= !isBoundry;
+        UpdateMap();
+        
+    }
      
-    
-    
+      
 d3.select(self.frameElement).style("height", height + "px");
 
 </script>
+<p>Ahmed Almutawa</p>  
+<p>Proff: Suresh Lodha</p>
